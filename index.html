@@ -1,0 +1,49 @@
+<html>
+<head>
+
+    <title>chrozera</title>
+    <link href='//fonts.googleapis.com/css?family=Amiko' rel='stylesheet'>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+
+
+    <link rel="stylesheet" href="chrozera.css" type="text/css"/>
+    <!--<script src="../node_modules/angular/angular.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+
+
+</head>
+
+<body id="bod" ng-app="chrozera" ng-controller="controller" ng-class="{stage1: state >= 1 }">
+<div>
+
+    <div class="c-text" ng-class="{stage2: state >= 2}" ng-click="animateMain()">
+        {{mainText}}
+    </div>
+    <div class="navigation-list" ng-class="{invisible: state < 3, 'fade-in': state >= 3}">
+
+        <div>
+            This section contains links to projects on my website.
+        </div>
+
+        <ul>
+	    <li><a href="/Dashboard">dashboard</a></li>
+            <li><a href="/playlist">playlist</a></li>
+            <li><a href="/gifsound">gifsound</a></li>
+            <li><a href="/canvastest">canvastest</a></li>
+            <li><a href="/stats/cpu.php">serverstats</a></li>
+        </ul>
+
+
+
+    </div>
+</div>
+</body>
+
+
+<script src="chrozera.min.js" type="text/javascript"></script>
+</html>
+

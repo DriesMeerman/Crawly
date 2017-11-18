@@ -1,0 +1,43 @@
+{
+    "http://chrozera.xyz": {
+        "a": {
+            "href": [
+                "http://chrozera.xyz/Dashboard",
+                "http://chrozera.xyz/playlist",
+                "http://chrozera.xyz/gifsound",
+                "http://chrozera.xyz/canvastest",
+                "http://chrozera.xyz/stats/cpu.php"
+            ]
+        },
+        "_depth": 0
+    },
+    "http://chrozera.xyz/stats/cpu.php": {
+        "_depth": 1
+    },
+    "http://chrozera.xyz/canvastest": {
+        "_depth": 1
+    },
+    "http://chrozera.xyz/Dashboard": {
+        "img": {
+            "src": [
+                "images/mountainbackground.png"
+            ]
+        },
+        "_depth": 1
+    },
+    "http://chrozera.xyz/playlist": {
+        "a": {
+            "href": [
+                "#",
+                "#",
+                "#",
+                "{{song.url}}",
+                null
+            ]
+        },
+        "_depth": 1
+    },
+    "http://chrozera.xyz/gifsound": {
+        "_depth": 1
+    }
+}
