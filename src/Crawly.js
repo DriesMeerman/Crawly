@@ -7,56 +7,79 @@ const fs = require('fs');
 class CrawlEmitter extends EventEmitter {}
 const crawlEmitter = new CrawlEmitter();
 
+let urls = [];
+let visited = {};
+let currentTypes = {};
+let callback = null;
+let maxDepth = 0;
+let crawledData = {};
+let blockNewUrls = false;
 
+crawlEmitter.on('crawledUrl', (result, depth) => {
 
-crawlEmitter.on('gotDataForUrl', (urls, types, depth, maxDepth, data, callback) => {
-    //console.log('got data for url', depth, maxDepth);
+    if (result !== -1){
+        let tempUrls = [];
 
-    //check if reached end before depth end
-    // let temp = data.filter((urlObj) => {
-    //     if (urlObj._depth == depth){
-    //         return urlObj;
-    //     }
-    // });
+        if (result['a'] && result['a']['href']){
 
-    // let cantContinue = false;
-    // temp.forEach((urlObj) => {
-    //
-    // });
+            tempUrls  = result['a']['href'].map(function (url){
+                return {
+                    url: url,
+                    depth: depth
+                };
+            });
 
-    setTimeout(() =>{
-        if (depth < maxDepth || cantContinue){
-            //crawlWithDepth(url, types,  maxDepth, depth+1, callback)
-            if (urls.length > 0){
-                urls.forEach((url) => {
-                    setTimeout(()=>{
-                        crawlWithDepth(url, types,  maxDepth, depth+1, data, callback);
-                    }, 1000)
-                });
+            tempUrls = tempUrls.filter(function (urlObj) {
+                if (urlObj.depth < maxDepth && urlObj.url.indexOf(result.parent) === -1){
+                    return urlObj;
+                }
+            });
+
+            if (urls.length < 100 && !blockNewUrls){
+                urls = urls.concat(tempUrls);
+                if (urls.length > 100){
+                    console.log(urls.length);
+                    saveobjToFile('urls.json', urls, true);
+                    blockNewUrls = true;
+                }
             } else {
-                console.log('no more urls');
+                console.log(urls.length);
+                saveobjToFile('urls.json', urls, true);
+                blockNewUrls = true;
             }
 
-        } else {
-            console.log('what');
-            callback(data);
         }
-    }, 1000)
+
+        console.log('Got data ', urls.length, 'urls left.');
+        let parent = result.parent;
+        delete result.parent;
+        // let data = {};
+        // data[parent] = result;
+
+        crawledData[parent] = result;
+    }
+
+    setTimeout(function(){
+        if (urls.length > 0){
+            let nextUrl = urls.shift();
+            if (nextUrl.depth < maxDepth && nextUrl.url){
+
+                crawlNext(nextUrl.url, nextUrl.depth + 1);
+            } else {
+                crawlEmitter.emit('crawledUrl', -1);
+            }
+        } else {
+            callback(crawledData);
+        }
+
+    },1000);
 });
 
-/**
- * @description works while maxdepth is reachable if not it fails.
- * @param url
- * @param types
- * @param maxDepth
- * @param depth
- * @param data
- * @param callback
- */
-function crawlWithDepth(url, types, maxDepth, depth, data, callback){
-    data = data ? data : {};
+function crawlWithDepth(url, types, depth, call){
 
-    depth = depth ? depth : 0;
+    callback = call;
+    maxDepth = depth;
+
 
     types = types ? types : {};
     if (!types['a'] || !types['a'].includes('href')){
@@ -64,42 +87,37 @@ function crawlWithDepth(url, types, maxDepth, depth, data, callback){
         types['a'].push('href');
     }
 
+    currentTypes = types;
 
-    setTimeout(()=>{
-        crawl(url, types, function(result){
-            data[url] = result;
-            data[url] = data[url] ? data[url] : {};
-            data[url]._depth = depth;
+    // urls.push({
+    //    url: url,
+    //    depth: 0
+    // });
 
-            let urls = [];
 
-            if (data[url]['a'] && data[url]['a']['href']){
-                urls = data[url]['a']['href'];
-            }
+    crawlNext(url, 0);
+    //crawlEmitter.emit('crawledUrl', -1, depth);
 
-            crawlEmitter.emit('gotDataForUrl', urls, types, depth, maxDepth, data, callback);
-        })
-    }, 1000)
-
-}
-/*
-function crawlWithDepth(url, types, maxDepth, depth, data, callback){
-    let crawlCount = 0;
-    let urls = [url];
-
-    crawl(url, types, () => {
-
-    })
+    setTimeout(function(){
+        saveobjToFile('urls.json', urls, true);
+    }, 10000)
 }
 
-function startUrlWorker(urls){
-    crawlWorker(urls)
-}
+function crawlNext(url, depth){
+    if (!visited[url] && !url.startsWith('#') ){
+        console.log('Visiting: ', url);
 
-function crawlWorker(urls){
+        crawl(url, currentTypes, (data)=>{
+            visited[url] = 1;
+            data.parent = url;
+            crawlEmitter.emit('crawledUrl', data, depth + 1);
+        });
 
+    } else {
+        visited[url]++;
+        crawlEmitter.emit('crawledUrl', -1, depth + 1);
+    }
 }
-*/
 
 /**
  * @param url
@@ -136,7 +154,6 @@ function crawl(url, types, callback){
                 retry = true;
                 request.abort();
                 crawl(newUrl, types, callback);
-                return;
             }
         }
 
@@ -153,7 +170,7 @@ function crawl(url, types, callback){
         });
 
     }, (err) =>{
-        console.log(err);
+        console.log('http request died', err);
     });
 }
 
@@ -236,6 +253,72 @@ function saveobjToFile(path, obj, pretty){
     let json = JSON.stringify(obj, null, pretty);
     fs.writeFile(path, json, 'utf-8');
 }
+
+
+/*
+
+crawlEmitter.on('gotDataForUrl', (urls, types, depth, maxDepth, data, callback) => {
+    setTimeout(() =>{
+        if (depth < maxDepth || cantContinue){
+            //crawlWithDepth(url, types,  maxDepth, depth+1, callback)
+            if (urls.length > 0){
+                urls.forEach((url) => {
+                    setTimeout(()=>{
+                        crawlWithDepth(url, types,  maxDepth, depth+1, data, callback);
+                    }, 1000)
+                });
+            } else {
+                console.log('no more urls');
+            }
+
+        } else {
+            console.log('what');
+            callback(data);
+        }
+    }, 1000)
+});
+
+/**
+ * @description works while maxdepth is reachable if not it fails.
+ * @param url
+ * @param types
+ * @param maxDepth
+ * @param depth
+ * @param data
+ * @param callback
+ */
+/*
+function crawlWithDepth(url, types, maxDepth, depth, data, callback){
+    data = data ? data : {};
+
+    depth = depth ? depth : 0;
+
+    types = types ? types : {};
+    if (!types['a'] || !types['a'].includes('href')){
+        types['a'] = types['a'] ? types['a'] : [];
+        types['a'].push('href');
+    }
+
+
+    setTimeout(()=>{
+        crawl(url, types, function(result){
+            data[url] = result;
+            data[url] = data[url] ? data[url] : {};
+            data[url]._depth = depth;
+
+            let urls = [];
+
+            if (data[url]['a'] && data[url]['a']['href']){
+                urls = data[url]['a']['href'];
+            }
+
+            crawlEmitter.emit('gotDataForUrl', urls, types, depth, maxDepth, data, callback);
+        })
+    }, 1000)
+
+}
+*/
+
 
 module.exports = {
     crawlUrl: crawl,

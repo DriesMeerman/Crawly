@@ -12,27 +12,40 @@ function init(){
         baseUrl = process.argv[2];
     }
 
-    testCrawlDepth(baseUrl, 2);
+    //testCrawlDepth(baseUrl, 2); //much unstable
+	if (!baseUrl) {
+		console.log('Error: no url given');
+	} else {
+    	testCrawl();
+	}
 
-    // testCrawl();
 } init();
 
 
 function testCrawlDepth(url, maxDepth){
     let types = {
         a: ['href'],
-        img: ['src']
+        img: ['src'],
+        title: ['innerHTML']
     };
-    crawl.crawlWithDepth(url, types, maxDepth, null, null, (data) => {
-        console.log('calback reached');
-        console.log(JSON.stringify(data, null, 4));
-        crawl.saveJSON("temp.json", data, true);
-    });
+
+    try{
+        crawl.crawlWithDepth(url, types, maxDepth, (data) => {
+            console.log('calback reached');
+            console.log(JSON.stringify(data, null, 4));
+            crawl.saveJSON("temp.json", data, true);
+        });
+    } catch(e){
+        console.log('error ', e);
+    }
 }
 
 function testCrawl(){
     let types = {
         h1: ['innerHTML'],
+        h2: ['innerHTML'],
+        h3: ['innerHTML'],
+        p: ['innerHTML'],
         a: ['href', 'innerHTML'],
         img: ['src'],
         script: ['src'],
@@ -41,7 +54,7 @@ function testCrawl(){
 
     console.log(process.argv);
     // return;
-    baseUrl = 'http://chrozera.xyz/';
+    //baseUrl = 'http://chrozera.xyz/';
     if (process.argv.length > 2 && process.argv[2]){
         baseUrl = process.argv[2];
         console.log('abab');
@@ -50,12 +63,8 @@ function testCrawl(){
 
     crawl.crawlUrl(baseUrl, types, function(data) {
         console.log('Got Data.');
-        crawlEmitter.emit('gotData', data);
+        crawl.saveJSON('temp.json', data, true);
     });
 }
 
-crawlEmitter.on('gotData', (data) => {
-   console.log(data);
-   //crawl.saveJSON('nos_data.json', data, true);
-});
 

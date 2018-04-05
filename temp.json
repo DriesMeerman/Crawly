@@ -1,43 +1,49 @@
 {
-    "http://chrozera.xyz": {
-        "a": {
-            "href": [
-                "http://chrozera.xyz/Dashboard",
-                "http://chrozera.xyz/playlist",
-                "http://chrozera.xyz/gifsound",
-                "http://chrozera.xyz/canvastest",
-                "http://chrozera.xyz/stats/cpu.php"
-            ]
-        },
-        "_depth": 0
+    "link": {
+        "rel": [
+            "stylesheet",
+            "stylesheet",
+            "stylesheet"
+        ],
+        "href": [
+            "styles/style.css",
+            "styles/navbar.css",
+            "https://fonts.googleapis.com/css?family=Open+Sans:400,600,800|Raleway:200,300,400|Slabo+27px"
+        ]
     },
-    "http://chrozera.xyz/stats/cpu.php": {
-        "_depth": 1
+    "a": {
+        "href": [
+            "#home",
+            "#timeline",
+            "#skills",
+            ""
+        ],
+        "innerHTML": [
+            "Home",
+            "\r\n\t\t\t",
+            "Timeline",
+            "\r\n\t\t\t",
+            "Skills",
+            "\r\n\t\t\t",
+            "About",
+            "\r\n\t\t",
+            "\r\n\t",
+            "\r\n\t"
+        ]
     },
-    "http://chrozera.xyz/canvastest": {
-        "_depth": 1
-    },
-    "http://chrozera.xyz/Dashboard": {
-        "img": {
-            "src": [
-                "images/mountainbackground.png"
-            ]
-        },
-        "_depth": 1
-    },
-    "http://chrozera.xyz/playlist": {
-        "a": {
-            "href": [
-                "#",
-                "#",
-                "#",
-                "{{song.url}}",
-                null
-            ]
-        },
-        "_depth": 1
-    },
-    "http://chrozera.xyz/gifsound": {
-        "_depth": 1
+    "script": {
+        "src": [
+            "node_modules/moment/min/moment.min.js",
+            "node_modules/angular/angular.min.js",
+            "node_modules/angular-route/angular-route.min.js",
+            "node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js",
+            "node_modules/jquery/dist/jquery.min.js",
+            "node_modules/bootstrap/dist/js/bootstrap.min.js",
+            "app.js",
+            "controllers/mainCtrl.js",
+            "controllers/homeCtrl.js",
+            "controllers/skillsCtrl.js",
+            "controllers/timelineCtrl.js"
+        ]
     }
 }
